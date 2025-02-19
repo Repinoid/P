@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	pgx "github.com/jackc/pgx/v5"
 	_ "github.com/lib/pq"
 )
 
@@ -21,7 +23,8 @@ type User struct {
 func main() {
 	//create router
 	router := mux.NewRouter()
-	router.HandleFunc("/u", first).Methods("GET")
+	router.HandleFunc("/f", first).Methods("GET")
+	router.HandleFunc("/s", second).Methods("GET")
 	router.HandleFunc("/", func(rwr http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(rwr, "Ruoter %+v\n", router)
 	}).Methods("GET")
@@ -38,7 +41,7 @@ func first(rwr http.ResponseWriter, req *http.Request) {
 	}
 	defer db.Close()
 
-	fmt.Fprintf(rwr, "ok Open %v", err)
+	fmt.Fprintf(rwr, "ok Open db %+v %+v\n", db, err)
 
 	err = db.Ping()
 	if err != nil {
@@ -46,5 +49,16 @@ func first(rwr http.ResponseWriter, req *http.Request) {
 		return
 	}
 	fmt.Fprintf(rwr, "PING OK %v %v\n", err, time.Now())
+
+}
+func second(rwr http.ResponseWriter, req *http.Request) {
+	var DBEndPoint = "postgres://postgres:postgres@go_db:5433/postgres"
+
+	baza, err := pgx.Connect(context.Background(), DBEndPoint)
+	if err != nil {
+		fmt.Fprintf(rwr, "NO pgx.Connect %v\n", err)
+		return
+	}
+	fmt.Fprintf(rwr, "PING OK %v %v\n", baza, time.Now())
 
 }
