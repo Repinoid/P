@@ -2,13 +2,21 @@ services:
   go-app:
     container_name: go-app
     image: ima
-    build: .
+    build:
+      context: ./
+      dockerfile: mydockfile
+    #      dockerfile: Dockerfile
     environment:
       DATABASE_URL: "host=go_db user=postgres password=postgres dbname=postgres sslmode=disable"
     ports:
-      - "8000:8000"
+      - target: 8000
+        published: 8091
+        protocol: tcp
     depends_on:
       - go_db
+    networks:
+      - localnet
+
   go_db:
     container_name: go_db
     image: postgres:12
@@ -17,9 +25,16 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
     ports:
-      - "5433:5432"
+      - target: 5432
+        published: 5433
+        protocol: tcp
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - oblbibl:/var/lib/postgresql/data
+    networks:
+      - localnet
 
-volumes:  
-  pgdata: {}
+volumes:
+  oblbibl:
+networks:
+  localnet:
+    driver: bridge

@@ -1,0 +1,17 @@
+# Use the official Go image as the base image
+FROM golang:alpine
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the Go source code into the container
+COPY main.go go.mod go.sum ./
+
+# Build the Go application
+RUN go build -o main .
+
+# указывает, какой порт будет прослушивать контейнер во время выполнения.
+EXPOSE 8090 
+
+# Define the command to run the application
+CMD ["./main"]

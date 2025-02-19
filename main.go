@@ -52,9 +52,10 @@ func first(rwr http.ResponseWriter, req *http.Request) {
 
 }
 func second(rwr http.ResponseWriter, req *http.Request) {
-	var DBEndPoint = "postgres://postgres:postgres@go_db:5433/postgres"
+	//	var DBEndPoint = "postgres://postgres:postgres@go_db:5432/postgres"
 
-	baza, err := pgx.Connect(context.Background(), DBEndPoint)
+	//	baza, err := pgx.Connect(context.Background(), DBEndPoint)
+	baza, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		fmt.Fprintf(rwr, "NO pgx.Connect %v\n", err)
 		return
