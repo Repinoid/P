@@ -1,0 +1,19 @@
+FROM golang:alpine AS builder
+
+# WORKDIR - рабочая директория в контейнере
+WORKDIR /usr/local/src  
+RUN apk --no-cache add bash git make gcc gettext musl-dev
+
+# dependicies
+COPY ["app/go.mod", "app/go.sum", "./"] # ./ - путь в контейнере
+RUN go mod Download
+
+#build
+COPY app ./
+RUN go build -o ./bin/app cmd/app/main.Go   # создаём исполняемый файл
+
+FROM alpine AS runner  # грузим чистый образ
+
+COPY --from=builder /usr/local/src/bin/app / 
+
+CMD ["/app"]
