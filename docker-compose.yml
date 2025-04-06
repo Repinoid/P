@@ -1,16 +1,19 @@
 services:
   go-app:
     container_name: go-app
-    image: ima
+    image: iman
     build:
       context: ./
-      dockerfile: mydockfile
+      dockerfile: armaniDock
+      # dockerfile: mydockfile
     #      dockerfile: Dockerfile
     environment:
       DATABASE_URL: "host=go_db user=postgres password=postgres dbname=postgres sslmode=disable"
     ports:
+    # server port http.ListenAndServe(":8000", router)
       - target: 8000
-        published: 8091
+    # http port
+        published: 8080
         protocol: tcp
     depends_on:
       - go_db

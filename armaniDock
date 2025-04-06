@@ -5,15 +5,24 @@ WORKDIR /usr/local/src
 RUN apk --no-cache add bash git make gcc gettext musl-dev
 
 # dependicies
-COPY ["app/go.mod", "app/go.sum", "./"] # ./ - путь в контейнере
-RUN go mod Download
+# ./ - путь в контейнере
+COPY app/go.mod app/go.sum ./
+RUN go mod download
 
 #build
-COPY app ./
-RUN go build -o ./bin/app cmd/app/main.Go   # создаём исполняемый файл
+# копируем весь app в контейнер в /usr/local/src 
+COPY app ./ 
+# создаём исполняемый файл в /usr/local/src/bin/app 
+RUN go build -o ./bin/app cmd/server/main.go   
 
-FROM alpine AS runner  # грузим чистый образ
+# грузим чистый образ
+FROM alpine AS runner  
 
+# внутри контейнера копируем исполняемый файл из /usr/local/src/bin/app в корень
 COPY --from=builder /usr/local/src/bin/app / 
+
+#EXPOSE the port
+# такой же как на сервере
+EXPOSE 8000 
 
 CMD ["/app"]
